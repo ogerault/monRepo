@@ -21,11 +21,7 @@ jobs:
         # Command to execute
       #  command: # default is ansible-playbook
       run: |
-        pwd
-        tree
-        cd ~
-        pwd
-        tree
+        cd ansible
         ansible-playbook \
           -vvv \
           --inventory inventory/DEV \
