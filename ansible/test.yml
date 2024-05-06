@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    myVar: 'Olivier'
+  tasks:
+    - name: 'My first task'
+      debug:
+        msg: "My first message, {{ myVar }}!"
