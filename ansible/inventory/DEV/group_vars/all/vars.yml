@@ -1,2 +1,2 @@
 ---
-myVar: 'Olivier'
+myVar: ${{ secrets.FTP_PASSWORD_DEV }}
