@@ -20,4 +20,6 @@ jobs:
         # Command to execute
         command: # default is ansible-playbook
           cd /
-          ansible-playbook ansible/test.yml
+          ansible-playbook \
+            --inventory inventory/DEV \
+            ansible/test.yml
