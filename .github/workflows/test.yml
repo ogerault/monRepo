@@ -22,7 +22,9 @@ jobs:
       run: |
         pwd
         tree
-        cd /
+        cd ~
+        pwd
+        tree
         ansible-playbook \
           -vvv \
           --inventory inventory/DEV \
