@@ -20,6 +20,8 @@ jobs:
         # Command to execute
       #  command: # default is ansible-playbook
       run: |
+        pwd
+        tree
         cd /
         ansible-playbook \
           -vvv \
