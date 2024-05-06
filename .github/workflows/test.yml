@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Ansible
       env:
-        FTP_PASSWORD_DEV: ${{ secrets.FTP_PASSWORD_DEV }}
+        FTP_PASSWORD_DEV: "${{ secrets.FTP_PASSWORD_DEV }}"
       run: |
         cd ansible
         ansible-playbook \
