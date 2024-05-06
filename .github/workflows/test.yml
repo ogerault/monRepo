@@ -21,7 +21,8 @@ jobs:
         # Command to execute
       #  command: # default is ansible-playbook
       run: |
+        cd ansible
         ansible-playbook \
           -vvv \
           --inventory inventory/DEV \
-          ansible/test.yml
+          test.yml
