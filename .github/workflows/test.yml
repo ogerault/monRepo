@@ -19,7 +19,7 @@ jobs:
       #with:
         # Command to execute
       #  command: # default is ansible-playbook
-      run:
+      run: |
         cd /
         ansible-playbook \
           -vvv \
