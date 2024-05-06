@@ -21,5 +21,6 @@ jobs:
         command: # default is ansible-playbook
           cd /
           ansible-playbook \
+            -vvv \
             --inventory inventory/DEV \
             ansible/test.yml
