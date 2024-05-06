@@ -19,4 +19,5 @@ jobs:
       with:
         # Command to execute
         command: # default is ansible-playbook
+          cd /
           ansible-playbook ansible/test.yml
