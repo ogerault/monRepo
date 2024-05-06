@@ -13,16 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Ansible CLI
-      # You may pin to the exact commit or the version.
-      # uses: tomasnorre/ansible-cli-client@bd08e0a19b445d0a2bc42877fdd7a2e9d632e8e3
-      #uses: tomasnorre/ansible-cli-client@0.0.2
-      #with:
-        # Command to execute
-      #  command: # default is ansible-playbook
+    - name: Ansible
+      env:
+        FTP_PASSWORD_DEV: ${{ secrets.FTP_PASSWORD_DEV }}
       run: |
         cd ansible
         ansible-playbook \
           -vvv \
           --inventory inventory/DEV \
+          -- extra-vars FTP_PASSWORD_DEV=${FTP_PASSWORD_DEV}
           test.yml

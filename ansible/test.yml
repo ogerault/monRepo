@@ -4,4 +4,4 @@
   tasks:
     - name: 'My first task'
       debug:
-        msg: "My first message, {{ myVar }}!"
+        msg: "My first message, {{ FTP_PASSWORD_DEV }}!"
