@@ -1,0 +1,8 @@
+- name: Ansible CLI
+  # You may pin to the exact commit or the version.
+  # uses: tomasnorre/ansible-cli-client@bd08e0a19b445d0a2bc42877fdd7a2e9d632e8e3
+  uses: tomasnorre/ansible-cli-client@0.0.2
+  with:
+    # Command to execute
+    command: # default is ansible-playbook
+      ansible-playbook ansible/test.yml
