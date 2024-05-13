@@ -102,11 +102,9 @@ function DoAction(){
 # Define variables
 #
 SCRIPT_NAME=$0
-SCRIPT_DIR=$(pwd)
 WORK_DIR=~/ogerault/monRepo
 LOG_FILE=~/log/deploy.log
 TMP_HTML_BODY_MAIL=/tmp/tmp_mail_body
-GIT_BRANCH=$(git branch | cut -d' ' -f2)
 DEST_MAIL=ogerault@itsgroup.com
 
 #
@@ -116,14 +114,21 @@ cd ${WORK_DIR}
 if [[ -f ${TMP_HTML_BODY_MAIL} ]]; then
   rm ${TMP_HTML_BODY_MAIL}
 fi
+[[ -d tmp_git_dir ]] && rm -rf tmp_git_dir
+mkdir tmp_git_dir
+cd tmp_git_dir
 
 #
 # Synchronize local repository with GitHub
 #
-logPrint 1 "Working on branch \"${GIT_BRANCH}\""
-logPrint 1 "Last commit of the local repository \"$(git show --stat)\""
-DoAction "git pull"
+DoAction "git clone --branch develop https://github.com/stephtkd/tkkd.git"
 logPrint 1 "Last commit of the pulled repository \"$(git show --stat)\""
+logPrint 1 "Work on branch \"$(git branch)\""
+
+#
+# No need to keep github link, so remove .git folder
+#
+rm -rf .git
 
 #
 # Do a composer update
