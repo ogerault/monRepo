@@ -63,7 +63,7 @@ function logPrint() {
 # Mail the report
 #
 function send_report_mail() {
-  if [[ "${DEST_MAIL}" != "" ]]; then
+  if test "${DEST_MAIL}" != ""; then
     (
       echo To: ${DEST_MAIL}
       echo Subject: [TAEKWONKIDO] Deploy result
@@ -84,12 +84,13 @@ function DoAction(){
 
   logPrint 0 "Try to '${ACTION}'..."
 
-  [[ -f ${LOG_FILE} ]] && rm ${LOG_FILE}
+  test -f ${LOG_FILE} && rm ${LOG_FILE}
   $(${ACTION}>${LOG_FILE} 2>&1)
 
-  if [[ $? -ne 0 ]]; then
+  if test $? -ne 0; then
     logPrint 3 "Failed"
     logPrint 1 "Action produced the log:\n$(cat ${LOG_FILE})"
+    send_report_mail
     rm ${LOG_FILE}
     exit 1
   fi
@@ -106,22 +107,40 @@ WORK_DIR=~/ogerault/monRepo
 LOG_FILE=~/log/deploy.log
 TMP_HTML_BODY_MAIL=/tmp/tmp_mail_body
 DEST_MAIL=ogerault@itsgroup.com
+BRANCH_NAME=develop
+
+#
+# Args management
+#
+while getopts u:b: flag; do
+  case "${flag}" in
+    u)
+      echo Usage: ${SCRIPT_NAME} [u|b]
+      ;;
+    b)
+      BRANCH_NAME=${OPTARG}
+      ;;
+  esac
+done
+if test "${BRANCH_NAME}" != "develop" && test "${BRANCH_NAME}" != "master"; then
+  logPrint 4 "Branch name can only be 'develop' or 'master'"
+  send_report_mail
+  exit 1
+fi
 
 #
 # Prepare environment
 #
 cd ${WORK_DIR}
-if [[ -f ${TMP_HTML_BODY_MAIL} ]]; then
-  rm ${TMP_HTML_BODY_MAIL}
-fi
-[[ -d tmp_git_dir ]] && rm -rf tmp_git_dir
+test -f ${TMP_HTML_BODY_MAIL} && rm ${TMP_HTML_BODY_MAIL}
+test -d tmp_git_dir && rm -rf tmp_git_dir
 mkdir tmp_git_dir
 cd tmp_git_dir
 
 #
 # Synchronize local repository with GitHub
 #
-DoAction "git clone --branch develop https://github.com/stephtkd/tkkd.git"
+DoAction "git clone --branch ${BRANCH_NAME} https://github.com/stephtkd/tkkd.git"
 logPrint 1 "Last commit of the pulled repository \"$(git show --stat)\""
 logPrint 1 "Work on branch \"$(git branch)\""
 
