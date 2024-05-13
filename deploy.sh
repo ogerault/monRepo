@@ -76,30 +76,26 @@ function send_report_mail() {
   fi
 }
 #
-# Compare version of the current script and the pulled one
+# Do an action with return code control and log
 #
-function compareVersion() {
-  ACTUAL_SCRIPT=$1
-  NEW_SCRIPT=$2
+function DoAction(){
+  ACTION=$1
+  LOG_FILE=/tmp/do_action.log
 
-  if [[ ! -f ${NEW_SCRIPT} ]]; then
-    logPrint 2 "Unable to find new script. Go on with the current one"
-    return
+  logPrint 0 "Try to '${ACTION}'..."
+
+  [[ -f ${LOG_FILE} ]] && rm ${LOG_FILE}
+  $(${ACTION}>${LOG_FILE} 2>&1)
+
+  if [[ $? -ne 0 ]]; then
+    logPrint 3 "Failed"
+    logPrint 1 "Action produced the log:\n$(cat ${LOG_FILE})"
+    rm ${LOG_FILE}
+    exit 1
   fi
-
-  VERSION_ACTUAL=$(grep ^#version ${ACTUAL_SCRIPT} | cut -d: -f2 | sed 's/ //g')
-  VERSION_NEW=$(grep ^#version ${NEW_SCRIPT} | cut -d: -f2 | sed 's/ //g')
-
-  if [[ ${VERSION_NEW} > ${VERSION_ACTUAL} ]]; then
-    logPrint 2 "Pulled script is the latest. Launch it instead"
-    chmod +x ${NEW_SCRIPT}
-    cd ${SCRIPT_DIR}
-    ${NEW_SCRIPT}
-    logPrint 0 "Leave the oldest script to avoid duplicate operations"
-    exit 0
-  fi
-
-  logPrint 0 "Current script seems to be the latest"
+  logPrint 0 "Succeed"
+  logPrint 1 "Action produced the log:\n$(cat ${LOG_FILE})"
+  rm ${LOG_FILE}
 }
 
 #
@@ -126,14 +122,23 @@ fi
 #
 logPrint 1 "Working on branch \"${GIT_BRANCH}\""
 logPrint 1 "Last commit of the local repository \"$(git show --stat)\""
-git pull
+DoAction "git pull"
 logPrint 1 "Last commit of the pulled repository \"$(git show --stat)\""
 
 #
-# Compare version of the current script and the pulled one.
-# If the new script has a higher version, launch it
+# Do a composer update
 #
-compareVersion ${SCRIPT_DIR}/${SCRIPT_NAME} ${SCRIPT_DIR}/newScript.sh
+DoAction "composer update"
+
+#
+# Npm install
+#
+DoAction "npm install"
+
+#
+# Migrate DB (if needed)
+#
+DoAction "php bin/console doctrine:migrations:migrate"
 
 #
 # Send report
